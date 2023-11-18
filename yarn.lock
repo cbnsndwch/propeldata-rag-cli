@@ -57,9 +57,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cbnsndwch/propeldata-rag@workspace:.":
+"@cbnsndwch/propeldata-rag-cli@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@cbnsndwch/propeldata-rag@workspace:."
+  resolution: "@cbnsndwch/propeldata-rag-cli@workspace:."
   dependencies:
     "@types/node": "npm:^20.8.9"
     "@typescript-eslint/eslint-plugin": "npm:5.62.0"

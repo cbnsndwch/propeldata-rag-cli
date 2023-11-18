@@ -1,7 +1,7 @@
 {
     "name": "@cbnsndwch/propeldata-rag-cli",
     "version": "0.1.0",
-	"license": "MIT",
+    "license": "MIT",
     "main": "dist/main.js",
     "bin": {
         "propel": "bin/propel.js"
@@ -12,7 +12,8 @@
         "build": "tsc",
         "dev": "tsc -w",
         "format": "prettier --write \"src/**/*.ts\"",
-        "lint": "eslint \"src/**/*\""
+        "lint": "eslint \"src/**/*\"",
+        "clog": "conventional-changelog -p angular -i CHANGELOG.md -o changelog-temp.md"
     },
     "dependencies": {
         "commander": "^11.1.0",
