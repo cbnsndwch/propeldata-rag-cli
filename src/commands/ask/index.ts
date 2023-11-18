@@ -11,7 +11,7 @@ export function addAskCommand(program: Command) {
             multiLine(
                 'Ask the PropelData LLM index a question.',
                 '',
-                'NOTE: You must run the `build-index` command first to build the index.'
+                'NOTE: You must run the `index` command first to build the index.'
             )
         )
         .option('-q, --question <question>', 'Input question to ask the index.')

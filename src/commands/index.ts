@@ -8,7 +8,7 @@ import { addBuildIndexCommand } from './build-index';
  * them available for invocation.
  */
 export const commands: AddCommandFn[] = [
-    addAskCommand,
-    addBuildIndexCommand
+    addBuildIndexCommand,
+    addAskCommand
     // add more command factories here as needed
 ];
