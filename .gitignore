@@ -61,5 +61,3 @@ tsconfig.tsbuildinfo
 
 # CLI tools
 /tools
-
-/data
