@@ -1,0 +1,17 @@
+.vscode
+assets
+dist
+/docs
+!/docs/**/*.js
+!/docs/**/*.jsx
+!/docs/**/*.graphql
+node_modules
+.editorconfig
+.gitignore
+.prettierignore
+.prettierrc
+
+# yarn
+.yarn
+.yarnrc.yml
+CHANGELOG.md
