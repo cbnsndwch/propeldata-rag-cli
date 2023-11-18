@@ -1,0 +1,198 @@
+"The Metric object. A Metric is a business indicator measured over time. [Learn more about Metrics](/docs/key-concepts#metric)."
+type Metric implements Node & Common {
+    "The Metric's unique identifier."
+    id: ID!
+    "The Metric's unique name."
+    uniqueName: String!
+    "The Metric's description."
+    description: String!
+    "The Metric's Environment."
+    environment: Environment!
+    "The Metric's Dimensions. These Dimensions are available to Query Filters."
+    dimensions: [Dimension!]!
+    "The Metric's timestamp."
+    timestamp: Dimension!
+    "The Metric's type. The different Metric types determine how the values are calculated."
+    type: MetricType!
+    "The settings for the Metric. The settings are specific to the Metric's type."
+    settings: MetricSettings!
+    "The Metric data in counter format. A single metric value for the given time range and filters."
+    counter(input: CounterInput!): CounterResponse
+    "The Metric data in time series format. Arrays of timestamps and Metric values for the given time range and filters."
+    timeSeries(input: TimeSeriesInput!): TimeSeriesResponse
+    "The Metric data in leaderboard format. A table (array of rows) with the selected dimensions and corresponding Metric values for the given time range and filters."
+    leaderboard(input: LeaderboardInput!): LeaderboardResponse
+}
+"The Dimension object that represents a column in a table."
+type Dimension {
+    "The column name it represents."
+    columnName: String!
+    "The column data type."
+    type: String!
+    "Whether the column is nullable."
+    isNullable: Boolean
+}
+"The available Metric types"
+enum MetricType {
+    "Counts the number of records that matches the Metric Filters. For time series, it will count the values for each time granularity"
+    COUNT
+    "Sums the values of the specified column for every record that matches the Metric Filters. For time series, it will sum the values for each time granularity"
+    SUM
+    "Counts the number of distinct values in the specified column for every record that matches the Metric Filters. For time series, it will count the distinct values for each time granularity"
+    COUNT_DISTINCT
+    "Averages the values of the specified column for every record that matches the Metric Filters. For time series, it will average the values for each time granularity"
+    AVERAGE
+    "Selects the minimum value of the specified column for every record that matches the Metric Filters. For time series, it will select the minimum value for each time granularity"
+    MIN
+    "Selects the maximum value of the specified column for every record that matches the Metric Filters. For time series, it will select the maximum value for each time granularity"
+    MAX
+    "Aggregates values based on the provided custom expression"
+    CUSTOM
+}
+"A Metric's settings, depending on its type"
+union MetricSettings = CountMetricSettings | SumMetricSettings | CountDistinctMetricSettings | AverageMetricSettings | MinMetricSettings | MaxMetricSettings | CustomMetricSettings
+"Settings for Count Metrics"
+type CountMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+}
+"Settings for Sum Metrics"
+type SumMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+    "The Dimension to be summed"
+    measure: Dimension!
+}
+"Settings for Count Distinct Metrics"
+type CountDistinctMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+    "The Dimension where the count distinct operation is going to be performed."
+    dimension: Dimension!
+}
+"Settings for Average Metrics"
+type AverageMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+    "The Dimension to be averaged."
+    measure: Dimension!
+}
+"Settings for Min Metrics"
+type MinMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+    "The Dimension to select the minimum from"
+    measure: Dimension!
+}
+"Settings for Max Metrics"
+type MaxMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+    "The Dimension to select the maximum from"
+    measure: Dimension!
+}
+"Settings for Custom Metrics"
+type CustomMetricSettings {
+    "Metric Filters allow defining a Metric with a subset of records from the given Data Pool. If no Metric Filters are present, all records will be included. To filter at query time, add Dimensions and use the `filters` property on the `timeSeriesInput`, `counterInput`, or `leaderboardInput` objects. There is no need to add `filters` to be able to filter at query time."
+    filters: [Filter!]
+    "The expression that defines the aggregation function for this Metric"
+    expression: String!
+}
+input MetricInput @oneOf {
+    "The ID of a pre-configured Metric."
+    id: ID
+    "The name of a pre-configured Metric."
+    name: String
+}
+"The fields for querying a Metric in counter format. A Metric's counter query returns a single value over a given time range."
+input CounterInput {
+    "The Metric to query. You can query a pre-configured Metric by ID or name."
+    metric: MetricInput
+    "The time range for calculating the counter."
+    timeRange: TimeRangeInput!
+    "The time zone to use. Dates and times are always returned in UTC, but setting the time zone influences relative time ranges and granularities. You can set this to `America/Los_Angeles`, `Europe/Berlin`, or any other value in the [IANA time zone database](https://en.wikipedia.org/wiki/Tz_database). Defaults to `UTC`"
+    timeZone: String
+    "The Query Filters to apply before retrieving the counter data. If no Query Filters are provided, all data is included."
+    filters: [FilterInput!]
+}
+"The fields for querying a Metric in time series format. A Metric's time series query returns the values over a given time range aggregated by a given time granularity; day, month, or year, for example."
+input TimeSeriesInput {
+    "The Metric to Query. It can be a pre-created one or it can be inlined here"
+    metric: MetricInput
+    "The time range for calculating the time series"
+    timeRange: TimeRangeInput!
+    "The time zone to use. Dates and times are always returned in UTC, but setting the time zone influences relative time ranges and granularities. You can set this to `America/Los_Angeles`, `Europe/Berlin`, or any other value in the [IANA time zone database](https://en.wikipedia.org/wiki/Tz_database). Defaults to `UTC`"
+    timeZone: String
+    "The time granularity (hour, day, month, etc.) to aggregate the Metric values by"
+    granularity: TimeSeriesGranularity!
+    "The Query Filters to apply before retrieving the time series data. If no Query Filters are provided, all data is included"
+    filters: [FilterInput!]
+}
+"The fields for querying a Metric in leaderboard format. A Metric's leaderboard query returns an ordered table of Dimension and Metric values over a given time range."
+input LeaderboardInput {
+    "The Metric to query. You can query a pre-configured Metric by ID or name, or you can query an ad hoc Metric that you define inline"
+    metric: MetricInput
+    "The time range for calculating the leaderboard"
+    timeRange: TimeRangeInput!
+    "The time zone to use. Dates and times are always returned in UTC, but setting the time zone influences relative time ranges and granularities. You can set this to `America/Los_Angeles`, `Europe/Berlin`, or any other value in the [IANA time zone database](https://en.wikipedia.org/wiki/Tz_database). Defaults to `UTC`"
+    timeZone: String
+    "One or many Dimensions to group the Metric values by. Typically, Dimensions in a leaderboard are what you want to compare and rank"
+    dimensions: [DimensionInput!]!
+    "The sort order of the rows. It can be ascending (`ASC`) or descending (`DESC`) order. Defaults to descending (`DESC`) order when not provided"
+    sort: Sort
+    "The number of rows to be returned. It can be a number between 1 and 1,000"
+    rowLimit: Int!
+    "The list of filters to apply before retrieving the leaderboard data. If no Query Filters are provided, all data is included"
+    filters: [FilterInput!]
+}
+"The time series response object. It contains an array of time series labels and an array of Metric values for the given time range and Query Filters"
+type TimeSeriesResponse {
+    "The time series labels"
+    labels: [String!]!
+    "The time series values"
+    values: [String]!
+    "The Query statistics and metadata"
+    query: QueryInfo!
+}
+"The counter response object. It contains a single Metric value for the given time range and Query Filters"
+type CounterResponse {
+    "The value of the counter"
+    value: String
+    "The Query statistics and metadata"
+    query: QueryInfo!
+}
+"The leaderboard response object. It contains an array of headers and a table (array of rows) with the selected Dimensions and corresponding Metric values for the given time range and Query Filters"
+type LeaderboardResponse {
+    "The table headers. It contains the Dimension and Metric names"
+    headers: [String!]!
+    "An ordered array of rows. Each row contains the Dimension values and the corresponding Metric value. A Dimension value can be empty. A Metric value will never be empty"
+    rows: [[String]!]!
+    "The Query statistics and metadata"
+    query: QueryInfo!
+}
+"The Query Info object. It contains metadata and statistics about a Query performed."
+type QueryInfo {
+    "The Query's unique identifier"
+    id: ID!
+    "The bytes processed by the Query"
+    bytesProcessed: String!
+    "The duration of the Query in milliseconds"
+    durationInMilliseconds: Int!
+    "The number of records processed by the Query"
+    recordsProcessed: String!
+    "The bytes returned by the Query"
+    resultingBytes: Int!
+    "The number of records returned by the Query"
+    resultingRecords: Int!
+    "The Query status"
+    status: QueryStatus!
+}
+"""The Query status"""
+enum QueryStatus {
+    """The Query was completed succesfully"""
+    COMPLETED
+    """The Query experienced an error"""
+    ERROR
+    """The Query timed out"""
+    TIMED_OUT
+}

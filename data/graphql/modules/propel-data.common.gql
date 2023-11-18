@@ -1,0 +1,141 @@
+"A GraphQL directive that specifies one of a set of allowed values for a field."
+directive @oneOf on INPUT_OBJECT
+"Represents an ISO 8601 date and time in UTC. For example, '2022-08-18T08:53:33Z'."
+scalar DateTime
+schema { 
+	query: Query 
+}
+type Query {
+    "Returns the Metric specified by the given ID."
+    metric(id: ID!): Metric
+    "Returns the Metric specified by the given unique name."
+    metricByName(uniqueName: String!): Metric
+    """
+	Returns the Metrics within the Environment.
+
+    The `metrics` query uses [cursor-based pagination](/docs/api/pagination) typical of GraphQL APIs. You can use the pairs of parameters `first` and `after` or `last` and `before` to page forward or backward through the results, respectively.
+
+    For forward pagination, the `first` parameter defines the number of results to return, and the `after` parameter defines the cursor to continue from. You should pass the cursor for the _last_ result of the current page to `after`.
+
+    For backward pagination, the `last` parameter defines the number of results to return, and the `before` parameter defines the cursor to continue from. You should pass the cursor for the _first_ result of the current page to `before`.
+    """
+    metrics(
+        first: Int
+        after: String
+        last: Int
+        before: String
+    ): MetricConnection
+    """
+    Build a report, or table, consisting of multiple Metrics broken down by one-or-more dimensions.
+
+    The first few columns of the report are the dimensions you choose to break down by. The subsequent columns are the
+    Metrics you choose to query. By default, the report sorts on the first Metric in descending order, but you can
+    configure this with the `orderByMetric` and `sort` inputs.
+
+    Finally, reports use [cursor-based pagination](/docs/api/pagination). You can control page size with the `first` and
+    `last` inputs.
+    """
+    metricReport(input: MetricReportInput!): MetricReportConnection
+    "Query a Metric in counter format. A single Metric value for the given time range and filters."
+    counter(input: CounterInput!): CounterResponse
+    "Query a Metric in time series format. Arrays of timestamps and Metric values for the given time range and filters."
+    timeSeries(input: TimeSeriesInput!): TimeSeriesResponse
+    "Query a Metric in leaderboard format. A table (array of rows) with the selected dimensions and corresponding Metric values for the given time range and filters."
+    leaderboard(input: LeaderboardInput!): LeaderboardResponse
+}
+"All Propel resources, such as Applications and Metrics, have a unique identifier, or ID. Typically, they may also have a unique name, which is specified in the interface `Common`."
+interface Node { id: ID! }
+"The ID or unique name input. If both ID and unique name are provided, the ID will take precedence."
+input idOrUniqueName {
+    "The unique identifier of the object"
+    id: String
+    "The unique name of the object"
+    uniqueName: String
+}
+"The failure response object"
+type FailureResponse {
+    "The error that caused the failure"
+    error: Error!
+}
+"The error object."
+type Error {
+    "The error code."
+    code: Int
+    "The error message."
+    message: String!
+}
+"The Account object"
+type Account {
+    "The Account's unique identifier"
+    id: ID!
+}
+"The Environments object. Environments are independent and isolated Propel workspaces for development, staging (testing), and production workloads. Environments are hosted in a specific region, initially in us-east-2 only."
+type Environment {
+    "The Environment's unique identifier."
+    id: ID!
+}
+"All Propel resources, such as Applications and Metrics, have a set of common properties, such as the Propel Account and Environment that they are associated with."
+interface Common {
+    "The resource's unique name"
+    uniqueName: String!
+    "The resource's description"
+    description: String!
+    "The resource's Account"
+    account: Account!
+    "The resource's Environment"
+    environment: Environment!
+    "The resource's creation date and time in UTC"
+    createdAt: DateTime!
+    "The resource's last modification date and time in UTC"
+    modifiedAt: DateTime!
+    "The resource's creator. It can be either a User ID, an Application ID, or `system` if it was created by Propel"
+    createdBy: String!
+    "The resource's last modifier. It can be either a User ID, an Application ID, or `system` if it was modified by Propel"
+    modifiedBy: String!
+}
+"The page info object used for pagination"
+type PageInfo {
+    "Points to the first item returned in the results. Used when paginating backward"
+    startCursor: String
+    "Points to the last item returned in the results. Used when paginating forward"
+    endCursor: String
+    "A boolean that indicates whether a next page of results exists."
+    hasNextPage: Boolean!
+    "A boolean that indicates whether a previous page of results exists."
+    hasPreviousPage: Boolean!
+}
+"""
+The fields of a filter. You can construct more complex filters using `and` and `or`. For example, to construct a filter equivalent to `(value > 0 AND value <= 100) OR status = "confirmed"` you could write:
+
+```
+{
+  "column": "value",
+  "operator": "GREATER_THAN",
+  "value": "0",
+  "and": [{
+    "column": "value",
+    "operator": "LESS_THAN_OR_EQUAL_TO",
+    "value": "0"
+  }],
+  "or": [{
+    "column": "status",
+    "operator": "EQUALS",
+    "value": "confirmed"
+  }]
+}
+```
+
+Note that `and` takes precedence over `or`.
+"""
+type Filter {
+    "The name of the column to filter on"
+    column: String!
+    "The operation to perform when comparing the column and filter values"
+    operator: FilterOperator!
+    "The value to compare the column to"
+	value: String
+	"Additional filters to AND with this one. AND takes precedence over OR"
+    and: [Filter!]
+    "Additional filters to OR with this one. AND takes precedence over OR"
+    or: [Filter!]
+}
