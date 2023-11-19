@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "gql": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string"
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "operationName": {
+                    "type": "string"
+                }
+            },
+            "required": ["query", "variables", "operationName"]
+        },
+        "remarks": {
+            "type": "string",
+            "maxLength": 255
+        },
+        "extras": {
+            "type": "object",
+            "additionalProperties": true
+        }
+    },
+    "required": ["gql", "remarks"]
+}

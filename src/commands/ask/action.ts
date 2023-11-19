@@ -1,16 +1,13 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import {
-    ContextChatEngine,
-    OpenAI,
-    VectorStoreIndex,
-    storageContextFromDefaults
-} from 'llamaindex';
+import { LLM, VectorStoreIndex, storageContextFromDefaults } from 'llamaindex';
 
+import { ChatGptLlm, ContextChatEngine } from '../../services';
 import { multiLine, singleLine } from '../../utils';
 
 import { ActionOptions } from './contracts';
+
+const DESIRED_RESPONSE_SCHEMA = `{"$schema": "http://json-schema.org/draft-07/schema#","type":"object","properties":{"gql":{"type":"object","properties":{"query":{"type":"string"},"variables":{"type":"object","additionalProperties":true},"operationName":{"type":"string"}},"required":["query","variables","operationName"]},"remarks":{"type":"string","maxLength":255},"extras":{"type":"object","additionalProperties":true}},"required":["gql","remarks"]}`;
 
 export async function ask(options: ActionOptions) {
     let { question } = options;
@@ -51,10 +48,33 @@ export async function ask(options: ActionOptions) {
     // - keeping all other defaults
     const chatEngine = new ContextChatEngine({
         retriever: index.asRetriever(),
-        chatModel: new OpenAI({
+        contextSystemPrompt({ context = '' }) {
+            return multiLine(
+				singleLine(
+                    `You are an AI assistant uses knowledge about PropelData's`,
+                    `GraphQL API schema and GraphQL in general to generate`,
+                    `GraphQL queries that can be run against the API. You should`,
+                    `always respond exclusively with a single JSON that matches`,
+                    `the following schema:`
+                ),
+                '```json',
+                DESIRED_RESPONSE_SCHEMA,
+                '```',
+                'Use the context below to inform your response:',
+                '<START OF CONTEXT>',
+                context,
+                '<END OF CONTEXT>'
+            );
+        },
+        chatModel: new ChatGptLlm({
             model: 'gpt-4-1106-preview',
-            temperature: 0
-        })
+            temperature: 0,
+            additionalChatOptions: {
+                response_format: {
+                    type: 'json_object'
+                }
+            }
+        }) as LLM
     });
 
     console.log('retrieving context and sending question to chat LLM...');
