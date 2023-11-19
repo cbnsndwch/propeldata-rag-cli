@@ -44,7 +44,10 @@ export async function buildIndex({ inputDir }: ActionOptions) {
         .filter(file => file.endsWith('.graphql') || file.endsWith('.gql'))
         .map(file => {
             const sdl = fs.readFileSync(path.resolve(inputDir, file), 'utf-8');
-            return new Document({ text: sdl });
+            return new Document({
+                id_: file,
+                text: sdl
+            });
         });
 
     const index = await VectorStoreIndex.fromDocuments(documents, {
