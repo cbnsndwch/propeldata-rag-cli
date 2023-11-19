@@ -1,6 +1,6 @@
 {
     "name": "@cbnsndwch/propeldata-rag-cli",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "license": "MIT",
     "main": "dist/main.js",
     "bin": {
@@ -13,6 +13,9 @@
         "dev": "tsc -w",
         "format": "prettier --write \"src/**/*.ts\"",
         "lint": "eslint \"src/**/*\"",
+        "vmajor": "yarn version major",
+        "vminor": "yarn version minor",
+        "vpatch": "yarn version patch",
         "clog": "conventional-changelog -p angular -i CHANGELOG.md -o changelog-temp.md"
     },
     "dependencies": {
