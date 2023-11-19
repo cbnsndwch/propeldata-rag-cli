@@ -61,7 +61,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cbnsndwch/propeldata-rag-cli@workspace:."
   dependencies:
+    "@types/lodash": "npm:^4.14.201"
     "@types/node": "npm:^20.8.9"
+    "@types/uuid": "npm:^9"
     "@typescript-eslint/eslint-plugin": "npm:5.62.0"
     "@typescript-eslint/parser": "npm:5.62.0"
     commander: "npm:^11.1.0"
@@ -73,8 +75,10 @@ __metadata:
     eslint-plugin-prettier: "npm:4.2.1"
     graphql: "npm:^16.8.1"
     llamaindex: "npm:^0.0.35"
+    lodash: "npm:^4.17.21"
     openai: "npm:^4.19.0"
     typescript: "npm:^5.2.2"
+    uuid: "npm:^9.0.1"
   bin:
     propel: bin/propel.js
   languageName: unknown
@@ -223,7 +227,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*":
+"@types/lodash@npm:*, @types/lodash@npm:^4.14.201":
   version: 4.14.201
   resolution: "@types/lodash@npm:4.14.201"
   checksum: 14dc43787296c429433d7d034ed47c5ac24b92217056f80a0e6c990449120b9c9c1058918188945fb88353c0c8333c5c36dccc40c51edbd39b05d2169ab2e0ad
@@ -276,6 +280,13 @@ __metadata:
   version: 7.5.5
   resolution: "@types/semver@npm:7.5.5"
   checksum: bb1b525221d93c9e7b45914af5ed1729a5bfdfa80927d6b02bcb4550ff7015f8c713152c32cb679ffcc79e77c0dda66d1f972ff5ee8d2205336729c51198bb18
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^9":
+  version: 9.0.7
+  resolution: "@types/uuid@npm:9.0.7"
+  checksum: b329ebd4f9d1d8e08d4f2cc211be4922d70d1149f73d5772630e4a3acfb5170c6d37b3d7a39a0412f1a56e86e8a844c7f297c798b082f90380608bf766688787
   languageName: node
   linkType: hard
 
