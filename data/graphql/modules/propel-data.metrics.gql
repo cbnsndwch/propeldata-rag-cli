@@ -196,3 +196,19 @@ enum QueryStatus {
     """The Query timed out"""
     TIMED_OUT
 }
+"The Metric connection object. Learn more about [pagination in GraphQL](https://www.propeldata.com/docs/api/pagination)."
+type MetricConnection {
+    "The Metric connection's edges"
+    edges: [MetricEdge!]!
+    "The Metric connection's nodes"
+    nodes: [Metric!]!
+    "The Metric connection's page info"
+    pageInfo: PageInfo!
+}
+"The Metric edge object. Learn more about [pagination in GraphQL](https://www.propeldata.com/docs/api/pagination)"
+type MetricEdge {
+    "The edge's cursor"
+    cursor: String!
+    "The edge's node"
+    node: Metric!
+}
