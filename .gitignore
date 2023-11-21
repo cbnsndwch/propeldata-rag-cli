@@ -1,9 +1,5 @@
 # Yarn
-.yarn
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
+.yarn/instal-state.gz
 .pnp.*
 
 # Dependencies & compiled output
@@ -61,3 +57,5 @@ tsconfig.tsbuildinfo
 
 # CLI tools
 /tools
+
+/.yarn/install-state.gz
